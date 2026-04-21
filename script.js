@@ -5,30 +5,28 @@ const pages = Array.from(
 
 const BASE_PAGE_W = 900;
 const BASE_PAGE_H = 1273;
-const BOOK_PADDING = 16;
+const INNER_PADDING = 16;
 
 const bookEl = document.getElementById("book");
+const wrapEl = document.querySelector(".book-wrap");
 const pageInfoEl = document.getElementById("pageInfo");
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
-const toolbarEl = document.querySelector(".toolbar");
 
 let pageFlip = null;
 let resizeTimer = null;
+let refreshToken = 0;
 
 function getBookViewportSize() {
-  const toolbarH = toolbarEl ? toolbarEl.offsetHeight : 0;
+  const wrapW = wrapEl ? wrapEl.clientWidth : window.innerWidth;
+  const wrapH = wrapEl ? wrapEl.clientHeight : window.innerHeight;
 
-  const availableW = Math.max(320, window.innerWidth - BOOK_PADDING * 2);
-  const availableH = Math.max(
-    320,
-    window.innerHeight - toolbarH - BOOK_PADDING * 2
-  );
+  const availableW = Math.max(320, wrapW - INNER_PADDING * 2);
+  const availableH = Math.max(320, wrapH - INNER_PADDING * 2);
 
   const isPortraitViewport = availableH > availableW;
 
-  // Màn dọc: ưu tiên 1 trang
-  // Màn ngang: ưu tiên 2 trang mở
+  // màn dọc ưu tiên 1 trang, màn ngang ưu tiên 2 trang
   const singleRatio = BASE_PAGE_W / BASE_PAGE_H;
   const spreadRatio = (BASE_PAGE_W * 2) / BASE_PAGE_H;
   const targetRatio = isPortraitViewport ? singleRatio : spreadRatio;
@@ -51,6 +49,14 @@ function applyBookSize() {
   const size = getBookViewportSize();
   bookEl.style.width = `${size.width}px`;
   bookEl.style.height = `${size.height}px`;
+}
+
+function afterLayoutStable(callback) {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      callback();
+    });
+  });
 }
 
 function updatePageInfo() {
@@ -86,19 +92,35 @@ function initFlipbook() {
   pageFlip.loadFromImages(pages);
 }
 
-function refreshFlipbookLayout() {
-  if (!pageFlip) return;
+function refreshFlipbookLayout(delay = 120) {
+  clearTimeout(resizeTimer);
+  const myToken = ++refreshToken;
 
-  const currentPage = pageFlip.getCurrentPageIndex();
+  resizeTimer = setTimeout(() => {
+    if (!pageFlip) return;
 
-  applyBookSize();
+    const currentPage = pageFlip.getCurrentPageIndex();
 
-  // Refresh lại layout nhưng không destroy root
-  pageFlip.updateFromImages(pages);
-  pageFlip.turnToPage(currentPage);
+    applyBookSize();
 
-  // Cập nhật số trang sau khi refresh
-  setTimeout(updatePageInfo, 50);
+    afterLayoutStable(() => {
+      if (myToken !== refreshToken) return;
+
+      pageFlip.updateFromImages(pages);
+
+      afterLayoutStable(() => {
+        if (myToken !== refreshToken) return;
+
+        const safePage = Math.max(
+          0,
+          Math.min(currentPage, pageFlip.getPageCount() - 1)
+        );
+
+        pageFlip.turnToPage(safePage);
+        updatePageInfo();
+      });
+    });
+  }, delay);
 }
 
 prevBtn.addEventListener("click", () => {
@@ -109,14 +131,24 @@ nextBtn.addEventListener("click", () => {
   if (pageFlip) pageFlip.flipNext();
 });
 
+const resizeObserver = new ResizeObserver(() => {
+  refreshFlipbookLayout(100);
+});
+
+if (wrapEl) {
+  resizeObserver.observe(wrapEl);
+}
+
 window.addEventListener("resize", () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(refreshFlipbookLayout, 250);
+  refreshFlipbookLayout(120);
+});
+
+window.addEventListener("orientationchange", () => {
+  refreshFlipbookLayout(250);
 });
 
 document.addEventListener("fullscreenchange", () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(refreshFlipbookLayout, 250);
+  refreshFlipbookLayout(300);
 });
 
 initFlipbook();
