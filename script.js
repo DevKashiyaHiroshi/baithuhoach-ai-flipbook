@@ -20,12 +20,10 @@ function getFitSize() {
   const availableW = window.innerWidth - SIDE_PADDING * 2;
   const availableH = window.innerHeight - toolbarH - TOP_BOTTOM_PADDING * 2;
 
-  // Màn dọc: fit theo 1 trang
-  // Màn ngang: fit theo 2 trang mở
   const isPortraitViewport = availableH > availableW;
 
-  const spreadRatio = (BASE_PAGE_W * 2) / BASE_PAGE_H; // 2 trang
-  const singleRatio = BASE_PAGE_W / BASE_PAGE_H;       // 1 trang
+  const spreadRatio = (BASE_PAGE_W * 2) / BASE_PAGE_H;
+  const singleRatio = BASE_PAGE_W / BASE_PAGE_H;
   const targetRatio = isPortraitViewport ? singleRatio : spreadRatio;
 
   let renderW, renderH;
