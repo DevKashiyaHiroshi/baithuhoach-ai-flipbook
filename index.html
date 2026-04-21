@@ -1,1 +1,25 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flipbook</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="app">
+    <div class="toolbar">
+      <button id="prevBtn">← Trang trước</button>
+      <div id="pageInfo">Đang tải...</div>
+      <button id="nextBtn">Trang sau →</button>
+    </div>
 
+    <div class="book-wrap">
+      <div id="book"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>
