@@ -1,4 +1,4 @@
-const pages = Array.from({ length: 28 }, (_, i) => `./pages/page-images-${i}.jpg`);
+const pages = Array.from({ length: 28 }, (_, i) => `./pages/page-compressed-images-${i}.jpg`);
 
 const BASE_PAGE_W = 900;
 const BASE_PAGE_H = 1273;
