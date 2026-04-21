@@ -1,19 +1,15 @@
-
-* {
-  box-sizing: border-box;
-}
-
 html, body {
   margin: 0;
   padding: 0;
   background: #111;
   color: #fff;
   font-family: Arial, sans-serif;
-  min-height: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .app {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -25,31 +21,11 @@ html, body {
   gap: 12px;
   padding: 12px;
   background: #1b1b1b;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.toolbar button {
-  border: 0;
-  background: #2d6cdf;
-  color: white;
-  padding: 10px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.toolbar button:hover {
-  opacity: 0.9;
-}
-
-#pageInfo {
-  min-width: 100px;
-  text-align: center;
+  flex: 0 0 auto;
 }
 
 .book-wrap {
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -58,7 +34,9 @@ html, body {
 }
 
 #book {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+  max-height: 100%;
 }
